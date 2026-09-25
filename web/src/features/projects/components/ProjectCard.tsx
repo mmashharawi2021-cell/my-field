@@ -3,7 +3,13 @@ import { StatusPill } from '../../../components/ui/StatusPill'
 import { AppIcon } from '../../../components/ui/AppIcon'
 import type { ProjectSummary } from '../../../types/project'
 
-export function ProjectCard({ project }: { project: ProjectSummary }) {
+type ProjectCardProps = {
+  project: ProjectSummary
+  onEdit: (project: ProjectSummary) => void
+  onArchive: (project: ProjectSummary) => void
+}
+
+export function ProjectCard({ project, onEdit, onArchive }: ProjectCardProps) {
   const progress = project.status === 'active' ? Math.min(88, 46 + project.layer_count * 4) : 28
 
   return (
@@ -31,10 +37,14 @@ export function ProjectCard({ project }: { project: ProjectSummary }) {
           <div><b>{project.feature_count.toLocaleString('en-US')}</b><span>عنصر مكاني</span></div>
         </div>
 
-        <ActionButton variant="ghost" fullWidth>
-          فتح مساحة العمل
-          <AppIcon name="chevron" size={16} />
-        </ActionButton>
+        <div className="project-card-actions">
+          <ActionButton variant="ghost" onClick={() => onEdit(project)}>تعديل</ActionButton>
+          <ActionButton variant="ghost" onClick={() => onArchive(project)}>أرشفة</ActionButton>
+          <ActionButton variant="primary">
+            فتح مساحة العمل
+            <AppIcon name="chevron" size={16} />
+          </ActionButton>
+        </div>
       </div>
     </article>
   )
