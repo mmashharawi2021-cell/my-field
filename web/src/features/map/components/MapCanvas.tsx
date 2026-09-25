@@ -11,20 +11,10 @@ export function MapCanvas() {
 
     const map = new Map({
       container: container.current,
-      style: {
-        version: 8,
-        sources: {},
-        layers: [
-          {
-            id: 'background',
-            type: 'background',
-            paint: { 'background-color': '#e8efee' },
-          },
-        ],
-      },
-      center: [34.45, 31.5],
-      zoom: 9,
-      attributionControl: false,
+      style: 'https://demotiles.maplibre.org/style.json',
+      center: [34.466, 31.51],
+      zoom: 10.2,
+      attributionControl: true,
     })
 
     map.addControl(new NavigationControl({ showCompass: true }), 'top-left')
@@ -40,8 +30,9 @@ export function MapCanvas() {
     <div className="map-canvas-wrap">
       <MapToolbar />
       <div ref={container} className="map-canvas" aria-label="خريطة My Field" />
-      <div className="map-empty-note">
-        الخريطة جاهزة — سيتم ربط Basemap والطبقات من PostGIS في المرحلة التالية.
+      <div className="map-status-badge">
+        <span className="map-status-dot" />
+        خريطة الأساس متصلة
       </div>
     </div>
   )
