@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import maplibregl, { Map } from 'maplibre-gl'
+import { Map, NavigationControl } from 'maplibre-gl'
 
 export default function MapPage() {
   const container = useRef<HTMLDivElement | null>(null)
@@ -7,7 +7,7 @@ export default function MapPage() {
 
   useEffect(() => {
     if (!container.current || mapRef.current) return
-    const map = new maplibregl.Map({
+    const map = new Map({
       container: container.current,
       style: {
         version: 8,
@@ -18,7 +18,7 @@ export default function MapPage() {
       zoom: 9,
       attributionControl: false,
     })
-    map.addControl(new maplibregl.NavigationControl({ showCompass: true }), 'top-left')
+    map.addControl(new NavigationControl({ showCompass: true }), 'top-left')
     mapRef.current = map
     return () => { map.remove(); mapRef.current = null }
   }, [])
