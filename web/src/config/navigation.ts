@@ -1,12 +1,14 @@
+import type { IconName } from '../components/ui/AppIcon'
+
 export type NavigationItem = {
   to: string
   label: string
-  icon: string
+  icon: IconName
   end?: boolean
 }
 
 export const navigationItems: NavigationItem[] = [
-  { to: '/', label: 'لوحة التحكم', icon: '▦', end: true },
-  { to: '/map', label: 'الخريطة', icon: '⌖' },
-  { to: '/projects', label: 'المشاريع', icon: '▣' },
+  { to: '/', label: 'الرئيسية', icon: 'home', end: true },
+  { to: '/map', label: 'الخريطة', icon: 'map' },
+  { to: '/projects', label: 'المشاريع', icon: 'projects' },
 ]
