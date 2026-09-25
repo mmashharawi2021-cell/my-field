@@ -2,13 +2,13 @@ services:
   db:
     image: postgis/postgis:17-3.5
     environment:
-      POSTGRES_DB: myfield
-      POSTGRES_USER: myfield
-      POSTGRES_PASSWORD: myfield
+      POSTGRES_DB: ${POSTGRES_DB:-myfield}
+      POSTGRES_USER: ${POSTGRES_USER:-myfield}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Create .env from .env.example and set POSTGRES_PASSWORD}
     volumes:
       - myfield_db:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U myfield -d myfield"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-myfield} -d ${POSTGRES_DB:-myfield}"]
       interval: 10s
       timeout: 5s
       retries: 8
@@ -17,8 +17,13 @@ services:
   server:
     build: ./server
     environment:
-      DATABASE_URL: postgresql+asyncpg://myfield:myfield@db:5432/myfield
-      CORS_ORIGINS: http://localhost:5173,http://localhost:8080
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-myfield}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-myfield}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://localhost:8080}
+      JWT_SECRET: ${JWT_SECRET:?Create .env from .env.example and set JWT_SECRET}
+      INITIAL_ADMIN_USERNAME: ${INITIAL_ADMIN_USERNAME:-admin}
+      INITIAL_ADMIN_FULL_NAME: ${INITIAL_ADMIN_FULL_NAME:-My Field Administrator}
+      INITIAL_ADMIN_PASSWORD: ${INITIAL_ADMIN_PASSWORD:-}
     depends_on:
       db:
         condition: service_healthy
