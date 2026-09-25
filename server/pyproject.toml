@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=80", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "my-field-server"
 version = "0.2.0"
@@ -20,6 +24,10 @@ dev = [
   "pytest>=8,<9",
   "httpx>=0.28,<1"
 ]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+exclude = ["migrations*", "tests*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
