@@ -1,0 +1,127 @@
+.dialog-backdrop {
+  position: fixed;
+  z-index: 2000;
+  inset: 0;
+  padding: 18px;
+  display: grid;
+  place-items: center;
+  background: rgba(5, 25, 23, .48);
+  backdrop-filter: blur(8px);
+}
+
+.dialog-card {
+  width: min(520px, 100%);
+  max-height: calc(100dvh - 36px);
+  overflow: auto;
+  border: 1px solid rgba(215, 231, 227, .9);
+  border-radius: 20px;
+  padding: 21px;
+  background: #fff;
+  box-shadow: 0 28px 80px rgba(6, 38, 34, .22);
+}
+
+.dialog-card--small {
+  width: min(430px, 100%);
+}
+
+.dialog-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.dialog-heading h3 {
+  margin: 5px 0 0;
+  font-size: 20px;
+}
+
+.dialog-close {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 10px;
+  background: #f1f6f4;
+  color: #4b625e;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.project-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.project-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.dialog-actions {
+  margin-top: 5px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.dialog-message {
+  color: var(--muted);
+  line-height: 1.8;
+  font-size: 11px;
+}
+
+.project-card-actions {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 7px;
+}
+
+.projects-loading,
+.projects-empty {
+  min-height: 180px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  border: 1px dashed #cddeda;
+  border-radius: 18px;
+  background: rgba(255,255,255,.72);
+  color: var(--muted);
+  text-align: center;
+}
+
+.projects-empty strong {
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.projects-empty span,
+.projects-loading {
+  font-size: 11px;
+}
+
+@media (max-width: 620px) {
+  .dialog-backdrop {
+    padding: 10px;
+    align-items: end;
+  }
+
+  .dialog-card {
+    width: 100%;
+    border-radius: 22px 22px 14px 14px;
+    padding: 19px 16px;
+  }
+
+  .project-card-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .project-card-actions .action-button:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .dialog-actions .action-button {
+    flex: 1;
+  }
+}
