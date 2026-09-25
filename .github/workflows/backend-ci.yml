@@ -12,7 +12,7 @@ on:
       - '.github/workflows/backend-ci.yml'
 
 jobs:
-  test:
+  unit:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -34,5 +34,57 @@ jobs:
       - name: Compile
         run: python -m compileall app migrations
 
-      - name: Test
-        run: pytest -q
+      - name: Unit tests
+        run: pytest -q tests/test_security.py tests/test_app.py
+
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgis/postgis:17-3.5
+        env:
+          POSTGRES_DB: myfield
+          POSTGRES_USER: myfield
+          POSTGRES_PASSWORD: myfield
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U myfield -d myfield"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      ENVIRONMENT: development
+      DATABASE_URL: postgresql+asyncpg://myfield:myfield@localhost:5432/myfield
+      JWT_SECRET: ci-only-secret-not-for-production-please-change
+      INITIAL_ADMIN_USERNAME: admin
+      INITIAL_ADMIN_FULL_NAME: CI Administrator
+      INITIAL_ADMIN_PASSWORD: Test-Admin-Password-123!
+
+    defaults:
+      run:
+        working-directory: server
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: server/pyproject.toml
+
+      - name: Install
+        run: pip install -e '.[dev]'
+
+      - name: Migrate
+        run: alembic upgrade head
+
+      - name: Seed
+        run: python -m app.db.seed
+
+      - name: Integration test
+        run: pytest -q tests/test_integration.py
