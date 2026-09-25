@@ -1,12 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.auth import router as auth_router
 from app.api.health import router as health_router
 from app.api.projects import router as projects_router
 from app.core.config import get_settings
 
 settings = get_settings()
-app = FastAPI(title=settings.app_name, version=settings.app_version)
+app = FastAPI(
+    title=settings.app_name,
+    version=settings.app_version,
+    description="Local-first GIS API for My Field Web and Android clients.",
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -17,6 +22,7 @@ app.add_middleware(
 )
 
 app.include_router(health_router, prefix="/api")
+app.include_router(auth_router, prefix="/api")
 app.include_router(projects_router, prefix="/api")
 
 
