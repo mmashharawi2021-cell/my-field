@@ -14,7 +14,7 @@ export function MapCanvas() {
       style: 'https://demotiles.maplibre.org/style.json',
       center: [34.466, 31.51],
       zoom: 10.2,
-      attributionControl: true,
+      attributionControl: { compact: true },
     })
 
     map.addControl(new NavigationControl({ showCompass: true }), 'top-left')
