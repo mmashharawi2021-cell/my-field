@@ -1,14 +1,19 @@
-import { StatusPill } from '../ui/StatusPill'
-
 export function TopBar() {
   return (
     <header className="topbar">
       <div className="topbar-title">
-        <h1>My Field</h1>
-        <p>منصة GIS ميدانية — Offline Ready</p>
+        <div className="mobile-brand-mark">MF</div>
+        <div>
+          <h1>My Field</h1>
+          <p>مركز إدارة العمل الميداني والبيانات المكانية</p>
+        </div>
       </div>
+
       <div className="top-actions">
-        <StatusPill>V1 Foundation</StatusPill>
+        <div className="connection-chip">
+          <span className="connection-dot" />
+          <span>جاهز للعمل</span>
+        </div>
         <div className="avatar" aria-label="حساب المستخدم">م</div>
       </div>
     </header>
