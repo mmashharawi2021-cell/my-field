@@ -11,9 +11,9 @@ export function MapCanvas() {
 
     const map = new Map({
       container: container.current,
-      style: 'https://demotiles.maplibre.org/style.json',
+      style: 'https://tiles.openfreemap.org/styles/liberty',
       center: [34.466, 31.51],
-      zoom: 10.2,
+      zoom: 10.5,
       attributionControl: { compact: true },
     })
 
@@ -32,7 +32,7 @@ export function MapCanvas() {
       <div ref={container} className="map-canvas" aria-label="خريطة My Field" />
       <div className="map-status-badge">
         <span className="map-status-dot" />
-        خريطة الأساس متصلة
+        OpenFreeMap · MapLibre
       </div>
     </div>
   )
