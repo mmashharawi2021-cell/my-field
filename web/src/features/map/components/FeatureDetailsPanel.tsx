@@ -7,16 +7,19 @@ const rows = [
 export function FeatureDetailsPanel() {
   return (
     <aside className="details-panel">
+      <div className="details-empty-icon">◎</div>
       <span className="eyebrow">التفاصيل</span>
-      <h3>لا يوجد تحديد</h3>
-      <p>اختر Feature من الخريطة لعرض الخصائص والنموذج والسجل التاريخي.</p>
+      <h3>لم يتم تحديد عنصر</h3>
+      <p>اختر أي عنصر من الخريطة لعرض الخصائص والنموذج وسجل التعديلات.</p>
 
-      {rows.map(([label, value]) => (
-        <div className="detail-placeholder" key={label}>
-          <span>{label}</span>
-          <b>{value}</b>
-        </div>
-      ))}
+      <div className="details-meta">
+        {rows.map(([label, value]) => (
+          <div className="detail-placeholder" key={label}>
+            <span>{label}</span>
+            <b>{value}</b>
+          </div>
+        ))}
+      </div>
     </aside>
   )
 }
