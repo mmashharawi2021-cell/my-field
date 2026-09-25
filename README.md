@@ -27,6 +27,20 @@ Local-first Web GIS platform designed for a future offline Android field applica
 - Backend unit tests
 - PostGIS integration CI
 
+
+### Phase 03 — Frontend Authentication & Project Integration
+- Real login screen
+- Protected routes
+- Browser-session token handling
+- Automatic token refresh
+- Current-user profile
+- Logout
+- GitHub Pages preview login
+- Authenticated project listing
+- Create/edit/archive project dialogs
+- Real Projects API integration
+
+
 ## Local run
 
 1. Copy the environment template:
