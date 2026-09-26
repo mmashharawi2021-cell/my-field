@@ -1,10 +1,10 @@
-import { Outlet } from 'react-router-dom'
+import { PageTransition } from './PageTransition'
 import { AppShell } from '../components/layout/AppShell'
 
 export function ProtectedLayout() {
   return (
     <AppShell>
-      <Outlet />
+      <PageTransition />
     </AppShell>
   )
 }

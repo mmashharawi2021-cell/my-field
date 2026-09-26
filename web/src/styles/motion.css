@@ -1,0 +1,70 @@
+/* Opacity-only page transitions keep map canvases and fixed dialogs stable. */
+.page-transition {
+  min-width: 0;
+  animation: page-fade-in 180ms ease-out both;
+}
+
+.page-transition--leaving {
+  animation: page-fade-out 110ms ease-in both;
+  pointer-events: none;
+}
+
+@keyframes page-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes page-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+:is(.action-button, .logout-button, .dialog-close, .hero-action, .nav-item, .mobile-nav-item) {
+  transition: transform 160ms ease, box-shadow 180ms ease,
+    background-color 180ms ease, border-color 180ms ease, color 180ms ease,
+    opacity 160ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :is(.action-button, .logout-button, .dialog-close, .hero-action):not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(11, 90, 80, .14);
+  }
+
+  :is(.nav-item, .mobile-nav-item):hover {
+    transform: translateY(-1px);
+  }
+}
+
+:is(.action-button, .logout-button, .dialog-close, .hero-action, .nav-item, .mobile-nav-item):not(:disabled):active {
+  transform: translateY(1px) scale(.98);
+  transition-duration: 80ms;
+}
+
+:is(button, a):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.action-button:disabled,
+.logout-button:disabled,
+.dialog-close:disabled {
+  transform: none;
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+@media (hover: none) {
+  .action-button:hover { transform: none; }
+  .action-button:not(:disabled):active { transform: scale(.98); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition { animation: none; }
+  :is(.action-button, .logout-button, .dialog-close, .hero-action, .nav-item, .mobile-nav-item) {
+    transition: none;
+  }
+  :is(.action-button, .logout-button, .dialog-close, .hero-action, .nav-item, .mobile-nav-item):is(:hover, :active) {
+    transform: none;
+  }
+}
