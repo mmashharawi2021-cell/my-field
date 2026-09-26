@@ -16,7 +16,7 @@ export function MobileBottomNav() {
           className={({ isActive }) =>
             [
               'mobile-nav-item',
-              item.to === '/map' ? 'mobile-nav-item--primary' : '',
+              isActive ? 'mobile-nav-item--primary' : '',
               isActive ? 'active' : '',
             ].filter(Boolean).join(' ')
           }

@@ -25,6 +25,13 @@
     opacity 160ms ease;
 }
 
+.mobile-nav-item {
+  transition: margin-top 180ms ease, min-height 180ms ease,
+    border-width 180ms ease, border-radius 180ms ease,
+    transform 160ms ease, box-shadow 180ms ease, color 180ms ease,
+    background-color 180ms ease;
+}
+
 @media (hover: hover) and (pointer: fine) {
   :is(.action-button, .logout-button, .dialog-close, .hero-action):not(:disabled):hover {
     transform: translateY(-2px);
