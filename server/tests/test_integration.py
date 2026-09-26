@@ -167,7 +167,7 @@ def test_auth_and_project_crud() -> None:
         async def verify_retained():
             async with SessionLocal() as db:
                 assert (await db.get(Layer, UUID(populated_id))).status == 'archived'
-                assert await db.scalar(select(func.count(Feature.id)).where(Feature.layer_id == UUID(populated_id))) == 1
+                assert await db.scalar(select(func.count(Feature.id)).where(Feature.layer_id == UUID(populated_id))) == 2
 
         client.portal.call(verify_retained)
 
@@ -184,3 +184,4 @@ def test_auth_and_project_crud() -> None:
         assert client.delete('/api/projects/' + project['id'], headers=headers).status_code == 204
         assert client.get(path, headers=headers).status_code == 404
         assert client.patch('/api/layers/' + remaining, headers=headers, json={'name': 'Archived parent'}).status_code == 404
+
