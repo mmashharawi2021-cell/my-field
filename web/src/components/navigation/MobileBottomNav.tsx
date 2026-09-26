@@ -1,11 +1,14 @@
 import { NavLink } from 'react-router-dom'
 import { navigationItems } from '../../config/navigation'
 import { AppIcon } from '../ui/AppIcon'
+import { canManageUsers } from '../../config/permissions'
+import { useAuthStore } from '../../stores/authStore'
 
 export function MobileBottomNav() {
+  const role = useAuthStore((state) => state.user?.role)
   return (
     <nav className="mobile-bottom-nav" aria-label="التنقل على الهاتف">
-      {navigationItems.map((item) => (
+      {navigationItems.filter((item) => !item.adminOnly || canManageUsers(role)).map((item) => (
         <NavLink
           key={item.to}
           to={item.to}

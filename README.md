@@ -43,6 +43,15 @@ Local-first Web GIS platform designed for a future offline Android field applica
 
 ## Local run
 
+### Phase 04 — Users, roles and real Layer CRUD
+- Administrator user creation, profile/role editing and activation controls
+- Server-enforced RBAC and protection against privilege escalation
+- Project-scoped PostGIS layer creation, editing, listing and soft archive
+- Project selection in the map, responsive layer forms and safe demo preview
+- Frontend tests plus expanded backend and PostGIS integration CI
+
+See [PHASE_04.md](PHASE_04.md) for API details, permissions and validation.
+
 1. Copy the environment template:
 
 ```bash

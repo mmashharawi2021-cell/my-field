@@ -1,8 +1,11 @@
 import { NavLink } from 'react-router-dom'
 import { navigationItems } from '../../config/navigation'
 import { AppIcon } from '../ui/AppIcon'
+import { canManageUsers } from '../../config/permissions'
+import { useAuthStore } from '../../stores/authStore'
 
 export function DesktopSidebar() {
+  const role = useAuthStore((state) => state.user?.role)
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -15,7 +18,7 @@ export function DesktopSidebar() {
 
       <div className="nav-section-label">مساحة العمل</div>
       <nav className="nav-list" aria-label="التنقل الرئيسي">
-        {navigationItems.map((item) => (
+        {navigationItems.filter((item) => !item.adminOnly || canManageUsers(role)).map((item) => (
           <NavLink
             key={item.to}
             to={item.to}

@@ -61,7 +61,8 @@
     right: 12px;
     bottom: max(10px, env(safe-area-inset-bottom));
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
     gap: 6px;
     min-height: 72px;
     background: rgba(8, 31, 29, .97);
@@ -346,21 +347,22 @@
   }
 
   .map-layout {
-    height: calc(100dvh - 152px);
+    height: auto;
     min-height: 530px;
     display: block;
     position: relative;
     border-radius: 18px;
   }
 
-  .map-panel,
+  .map-panel { display: block; max-height: 420px; overflow: auto; margin-bottom: 12px; }
+
   .details-panel {
     display: none;
   }
 
   .map-canvas-wrap {
     width: 100%;
-    height: 100%;
+    height: 60dvh;
   }
 
   .map-toolbar {
