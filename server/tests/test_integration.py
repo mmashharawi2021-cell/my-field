@@ -118,6 +118,32 @@ def test_auth_and_project_crud() -> None:
         assert client.get('/api/projects/' + project['id'], headers=headers).json()['layer_count'] == 2
         assert len(client.get(path, headers=headers).json()) == 2
 
+        # Phase 05 feature CRUD, optimistic concurrency and history.
+        point_layer = next(item for item in client.get(path, headers=headers).json() if item['geometry_type'] == 'Point')
+        feature_path = '/api/layers/' + point_layer['id'] + '/features'
+        payload = {'geometry': {'type': 'Point', 'coordinates': [34.466, 31.51]}, 'properties': {'name': 'Valve 1', 'status': 'new'}}
+        assert client.post(feature_path, headers=viewer_headers, json=payload).status_code == 403
+        created_feature = client.post(feature_path, headers=manager_headers, json=payload)
+        assert created_feature.status_code == 201, created_feature.text
+        feature = created_feature.json()
+        assert feature['version'] == 1 and feature['geometry'] == payload['geometry']
+        assert client.get(feature_path, headers=viewer_headers).json()[0]['id'] == feature['id']
+        direct_path = '/api/features/' + feature['id']
+        updated_feature = client.patch(direct_path, headers=manager_headers, json={'version': 1, 'properties': {'name': 'Valve 1 reviewed'}})
+        assert updated_feature.status_code == 200, updated_feature.text
+        assert updated_feature.json()['version'] == 2
+        assert client.patch(direct_path, headers=manager_headers, json={'version': 1, 'properties': {}}).status_code == 409
+        assert client.patch(direct_path, headers=manager_headers, json={'version': 2, 'geometry': {'type': 'Polygon', 'coordinates': [[[0, 0], [1, 0], [0, 1], [0, 0]]]}}).status_code == 422
+        assert [item['version'] for item in client.get(direct_path + '/versions', headers=viewer_headers).json()] == [2, 1]
+        assert [item['operation'] for item in client.get(direct_path + '/changes', headers=viewer_headers).json()] == ['update', 'create']
+        assert client.delete(direct_path + '?version=1', headers=manager_headers).status_code == 409
+        assert client.delete(direct_path + '?version=2', headers=manager_headers).status_code == 204
+        assert client.get(direct_path, headers=headers).status_code == 404
+        assert client.get(feature_path, headers=headers).json() == []
+        deleted_versions = client.get(direct_path + '/versions', headers=headers).json()
+        assert [item['version'] for item in deleted_versions] == [3, 2, 1]
+        assert client.get(direct_path + '/changes', headers=headers).json()[0]['operation'] == 'delete'
+
         # Existing features (including soft-deleted ones) prevent incompatible
         # layer metadata changes; archiving retains the actual PostGIS row.
         from app.db.session import SessionLocal

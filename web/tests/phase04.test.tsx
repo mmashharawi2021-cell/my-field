@@ -9,6 +9,7 @@ import UsersPage from '../src/pages/UsersPage'
 import { LayerPanel } from '../src/features/map/components/LayerPanel'
 import { useAuthStore } from '../src/stores/authStore'
 import { session } from '../src/services/session'
+import { MapWorkspaceProvider } from '../src/features/map/MapWorkspaceContext'
 
 const actor = { id: 'actor', username: 'admin', full_name: 'Test Admin', role: 'super_admin', is_active: true }
 
@@ -60,7 +61,7 @@ it('switches project layer queries and hides writes for viewers', async () => {
     [{ id: url, name: url.includes('/one/') ? 'Layer One' : 'Layer Two', geometry_type: 'Point', srid: 4326, status: 'active' }]
   ), { status: 200 }))
   vi.stubGlobal('fetch', fetch)
-  render(<QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}><MemoryRouter><LayerPanel /></MemoryRouter></QueryClientProvider>)
+  render(<QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}><MemoryRouter><MapWorkspaceProvider><LayerPanel /></MapWorkspaceProvider></MemoryRouter></QueryClientProvider>)
   expect(await screen.findByText('Layer One')).toBeTruthy()
   expect(screen.queryByRole('button', { name: 'إضافة طبقة' })).toBeNull()
   await userEvent.selectOptions(screen.getByRole('combobox'), 'two')

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router-dom'
 import { ActionButton } from '../../../components/ui/ActionButton'
@@ -10,6 +10,7 @@ import { canManageLayers } from '../../../config/permissions'
 import { useAuthStore } from '../../../stores/authStore'
 import { LayerForm } from '../../layers/components/LayerForm'
 import type { Layer, LayerInput } from '../../../types/layer'
+import { useMapWorkspace } from '../MapWorkspaceContext'
 
 export function LayerPanel() {
   const projects = useQuery({ queryKey: ['projects'], queryFn: api.projects.list })
@@ -34,6 +35,18 @@ function ProjectLayers({ projectId }: { projectId: string }) {
   const [editing, setEditing] = useState<Layer | null | undefined>(undefined)
   const [archiving, setArchiving] = useState<Layer | null>(null)
   const layers = useQuery({ queryKey: ['layers', projectId], queryFn: () => layersApi.list(projectId) })
+  const { activeLayer, setActiveLayer, setSelectedFeature, setDrawing, setVertices } = useMapWorkspace()
+  useEffect(() => {
+    const available = layers.data ?? []
+    if (!available.length) { setActiveLayer(null); return }
+    if (!activeLayer || activeLayer.project_id !== projectId || !available.some((layer) => layer.id === activeLayer.id)) {
+      setActiveLayer(available[0])
+    }
+  }, [layers.data, projectId, activeLayer, setActiveLayer])
+
+  function chooseLayer(layer: Layer) {
+    setActiveLayer(layer); setSelectedFeature(null); setDrawing(false); setVertices([])
+  }
   async function invalidate() {
     await Promise.all([cache.invalidateQueries({ queryKey: ['layers', projectId] }), cache.invalidateQueries({ queryKey: ['projects'] })])
   }
@@ -50,8 +63,8 @@ function ProjectLayers({ projectId }: { projectId: string }) {
     {layers.isPending && <p>جارِ تحميل الطبقات…</p>}
     {(layers.error || archive.error) && <Notice>{(layers.error || archive.error)?.message}</Notice>}
     {layers.data?.length === 0 && <p>لا توجد طبقات في هذا المشروع بعد.</p>}
-    <div className="layer-list">{layers.data?.map((layer) => <article className="layer-entry" key={layer.id}>
-      <strong>{layer.name}</strong><small>{layer.geometry_type} · EPSG:{layer.srid} · {layer.status === 'active' ? 'نشط' : 'مسودة'}</small>
+    <div className="layer-list">{layers.data?.map((layer) => <article className={`layer-entry${activeLayer?.id === layer.id ? ' layer-entry--active' : ''}`} key={layer.id}>
+      <button type="button" className="layer-select" aria-pressed={activeLayer?.id === layer.id} onClick={() => chooseLayer(layer)}><strong>{layer.name}</strong><small>{layer.geometry_type} · EPSG:{layer.srid} · {layer.status === 'active' ? 'نشط' : 'مسودة'}</small></button>
       {canManage && <div className="dialog-actions"><ActionButton onClick={() => setEditing(layer)}>تعديل</ActionButton><ActionButton onClick={() => setArchiving(layer)}>أرشفة</ActionButton></div>}
     </article>)}</div>
     {canManage && <ActionButton variant="primary" fullWidth onClick={() => setEditing(null)}>إضافة طبقة</ActionButton>}

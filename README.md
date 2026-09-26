@@ -52,6 +52,15 @@ Local-first Web GIS platform designed for a future offline Android field applica
 
 See [PHASE_04.md](PHASE_04.md) for API details, permissions and validation.
 
+### Phase 05 — Spatial feature editing and history
+- Real Point, LineString and Polygon features rendered from PostGIS
+- Map drawing, selection, property editing, geometry redraw and soft deletion
+- Optimistic version checks that reject stale updates
+- Immutable feature snapshots and per-operation change logs
+- Role-aware editing controls and an isolated in-memory Pages preview
+
+See [PHASE_05.md](PHASE_05.md) for the workflow, API and security rules.
+
 1. Copy the environment template:
 
 ```bash

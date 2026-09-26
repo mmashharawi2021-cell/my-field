@@ -6,6 +6,8 @@
 .management-row p, .layer-note { color: var(--muted); font-size: 12px; }
 .layer-entry { display: grid; gap: 8px; border-bottom: 1px solid #d7e7e3; padding: 16px 0; }
 .layer-entry small { color: var(--muted); }
+.layer-entry--active { border-color: var(--accent); background: var(--accent-soft); border-radius: 12px; padding-inline: 10px; }
+.layer-select { display: grid; gap: 5px; width: 100%; border: 0; background: transparent; color: inherit; text-align: start; padding: 0; }
 .map-panel select { max-width: 100%; }
 
 .dialog-backdrop {
