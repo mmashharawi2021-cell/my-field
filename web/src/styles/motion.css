@@ -1,7 +1,7 @@
 /* Opacity-only page transitions keep map canvases and fixed dialogs stable. */
 .page-transition {
   min-width: 0;
-  animation: page-fade-in 180ms ease-out both;
+  animation: page-fade-in 180ms ease-out backwards;
 }
 
 .page-transition--leaving {
