@@ -37,7 +37,10 @@
   }
 
   .details-panel {
-    display: none;
+    display: grid;
+    margin-top: 12px;
+    max-height: none;
+    overflow: visible;
   }
 }
 

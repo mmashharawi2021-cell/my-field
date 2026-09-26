@@ -92,6 +92,17 @@
   width: 100%;
 }
 
+.draw-help { align-self: center; color: var(--ink); background: rgba(255,255,255,.92); border-radius: 10px; padding: 8px 10px; font-size: 11px; font-weight: 800; }
+.map-notice { position: absolute; z-index: 5; top: 72px; right: 12px; left: 12px; }
+.properties-editor { display: grid; gap: 7px; font-size: 11px; font-weight: 800; }
+.properties-editor textarea { width: 100%; resize: vertical; border: 1px solid var(--line); border-radius: 10px; padding: 10px; font: 11px/1.6 monospace; background: var(--soft); }
+.properties-editor textarea:not([readonly]) { border-color: var(--accent); background: #fff; }
+.feature-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+.history-section { display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 14px; }
+.history-section h4 { margin: 0; }
+.history-section > div { display: flex; justify-content: space-between; gap: 8px; font-size: 10px; }
+.history-section span { color: var(--muted); }
+
 .hero-panel {
   border: 1px solid rgba(205, 225, 220, .86);
   border-radius: 24px;

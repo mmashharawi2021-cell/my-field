@@ -6,6 +6,7 @@ from app.api.health import router as health_router
 from app.api.projects import router as projects_router
 from app.api.users import router as users_router
 from app.api.layers import router as layers_router
+from app.api.features import router as features_router
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -28,6 +29,7 @@ app.include_router(auth_router, prefix="/api")
 app.include_router(projects_router, prefix="/api")
 app.include_router(users_router, prefix="/api")
 app.include_router(layers_router, prefix="/api")
+app.include_router(features_router, prefix="/api")
 
 
 @app.get("/")

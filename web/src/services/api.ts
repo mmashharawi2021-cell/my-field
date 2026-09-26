@@ -74,9 +74,10 @@ async function parseError(response: Response): Promise<ApiError> {
   let message = 'حدث خطأ أثناء الاتصال بالخادم'
 
   try {
-    const body = await response.json() as { detail?: string | { msg: string }[] }
+    const body = await response.json() as { detail?: string | { msg: string }[] | { message?: string; current_version?: number } }
     if (typeof body.detail === 'string') message = body.detail
     else if (Array.isArray(body.detail)) message = body.detail.map((item) => item.msg).join('، ')
+    else if (body.detail?.message) message = body.detail.message + (body.detail.current_version ? ` (v${body.detail.current_version})` : '')
   } catch {
     // Keep generic message.
   }
