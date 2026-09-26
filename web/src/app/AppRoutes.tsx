@@ -3,6 +3,7 @@ import DashboardPage from '../pages/DashboardPage'
 import LoginPage from '../pages/LoginPage'
 import MapPage from '../pages/MapPage'
 import ProjectsPage from '../pages/ProjectsPage'
+import UsersPage from '../pages/UsersPage'
 import { ProtectedLayout } from './ProtectedLayout'
 import { ProtectedRoute } from './ProtectedRoute'
 
@@ -16,6 +17,7 @@ export function AppRoutes() {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/map" element={<MapPage />} />
           <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/users" element={<UsersPage />} />
         </Route>
       </Route>
 

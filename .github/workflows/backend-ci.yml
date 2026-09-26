@@ -35,7 +35,7 @@ jobs:
         run: python -m compileall app migrations
 
       - name: Unit tests
-        run: pytest -q tests/test_security.py tests/test_app.py
+        run: pytest -q tests/test_security.py tests/test_app.py tests/test_phase04.py
 
   integration:
     runs-on: ubuntu-latest

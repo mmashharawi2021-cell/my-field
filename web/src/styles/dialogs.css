@@ -1,3 +1,13 @@
+.form-dialog { margin: auto; border: 1px solid #d7e7e3; color: var(--ink); }
+.form-dialog::backdrop { background: rgba(5, 25, 23, .48); }
+.management-heading, .management-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.management-list { display: grid; gap: 12px; }
+.management-row { padding: 20px; background: white; border: 1px solid #d7e7e3; border-radius: 16px; }
+.management-row p, .layer-note { color: var(--muted); font-size: 12px; }
+.layer-entry { display: grid; gap: 8px; border-bottom: 1px solid #d7e7e3; padding: 16px 0; }
+.layer-entry small { color: var(--muted); }
+.map-panel select { max-width: 100%; }
+
 .dialog-backdrop {
   position: fixed;
   z-index: 2000;

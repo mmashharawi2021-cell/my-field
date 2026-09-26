@@ -1,11 +1,22 @@
 import { useNavigate } from 'react-router-dom'
 import { PREVIEW_MODE } from '../../services/api'
 import { useAuthStore } from '../../stores/authStore'
+import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
+import { api } from '../../services/api'
+import { session } from '../../services/session'
 
 export function TopBar() {
   const navigate = useNavigate()
   const user = useAuthStore((state) => state.user)
   const logout = useAuthStore((state) => state.logout)
+  const profile = useQuery({ queryKey: ['me', user?.id], queryFn: api.auth.me, refetchInterval: 30_000, refetchOnWindowFocus: true })
+  useEffect(() => {
+    if (profile.data) {
+      session.setUser(profile.data)
+      useAuthStore.setState({ user: profile.data })
+    }
+  }, [profile.data])
 
   const initial = user?.full_name?.trim().charAt(0) || user?.username?.charAt(0) || 'م'
 

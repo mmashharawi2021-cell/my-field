@@ -2,6 +2,9 @@ import { ActionButton } from '../../../components/ui/ActionButton'
 import { StatusPill } from '../../../components/ui/StatusPill'
 import { AppIcon } from '../../../components/ui/AppIcon'
 import type { ProjectSummary } from '../../../types/project'
+import { useNavigate } from 'react-router-dom'
+import { useAuthStore } from '../../../stores/authStore'
+import { canManageLayers } from '../../../config/permissions'
 
 type ProjectCardProps = {
   project: ProjectSummary
@@ -10,6 +13,8 @@ type ProjectCardProps = {
 }
 
 export function ProjectCard({ project, onEdit, onArchive }: ProjectCardProps) {
+  const navigate = useNavigate()
+  const canManage = canManageLayers(useAuthStore((state) => state.user?.role))
   const progress = project.status === 'active' ? Math.min(88, 46 + project.layer_count * 4) : 28
 
   return (
@@ -38,9 +43,9 @@ export function ProjectCard({ project, onEdit, onArchive }: ProjectCardProps) {
         </div>
 
         <div className="project-card-actions">
-          <ActionButton variant="ghost" onClick={() => onEdit(project)}>تعديل</ActionButton>
-          <ActionButton variant="ghost" onClick={() => onArchive(project)}>أرشفة</ActionButton>
-          <ActionButton variant="primary">
+          {canManage && <ActionButton variant="ghost" onClick={() => onEdit(project)}>تعديل</ActionButton>}
+          {canManage && <ActionButton variant="ghost" onClick={() => onArchive(project)}>أرشفة</ActionButton>}
+          <ActionButton variant="primary" onClick={() => navigate('/map?project=' + encodeURIComponent(project.id))}>
             فتح مساحة العمل
             <AppIcon name="chevron" size={16} />
           </ActionButton>

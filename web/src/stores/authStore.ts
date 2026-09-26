@@ -61,3 +61,9 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user: null, isAuthenticated: false, error: null })
   },
 }))
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('myfield:session-cleared', () => {
+    useAuthStore.setState({ user: null, isAuthenticated: false })
+  })
+}

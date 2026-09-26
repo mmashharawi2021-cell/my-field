@@ -40,5 +40,6 @@ export const session = {
     storage()?.removeItem(ACCESS_KEY)
     storage()?.removeItem(REFRESH_KEY)
     storage()?.removeItem(USER_KEY)
+    if (typeof window !== 'undefined') window.dispatchEvent(new Event('myfield:session-cleared'))
   },
 }

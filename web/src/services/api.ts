@@ -1,6 +1,7 @@
 import type { TokenPair, UserProfile } from '../types/auth'
 import type { ProjectCreateInput, ProjectSummary, ProjectUpdateInput } from '../types/project'
 import { session } from './session'
+import { managementPreview } from './managementPreview'
 
 export const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '/api'
 export const PREVIEW_MODE = import.meta.env.VITE_PREVIEW_MODE === 'true'
@@ -73,8 +74,9 @@ async function parseError(response: Response): Promise<ApiError> {
   let message = 'حدث خطأ أثناء الاتصال بالخادم'
 
   try {
-    const body = await response.json() as { detail?: string }
-    if (body.detail) message = body.detail
+    const body = await response.json() as { detail?: string | { msg: string }[] }
+    if (typeof body.detail === 'string') message = body.detail
+    else if (Array.isArray(body.detail)) message = body.detail.map((item) => item.msg).join('، ')
   } catch {
     // Keep generic message.
   }
@@ -118,7 +120,7 @@ async function refreshTokens(): Promise<boolean> {
   }
 }
 
-async function authorizedRequest<T>(
+export async function authorizedRequest<T>(
   path: string,
   options: RequestInit = {},
   retry = true,
@@ -152,7 +154,7 @@ export const api = {
       ? Promise.resolve({
           status: 'preview',
           service: 'GitHub Pages Preview',
-          version: 'Phase 03',
+          version: 'Phase 04',
           database: 'local-server-offline',
         })
       : rawRequest<HealthResponse>('/health'),
@@ -182,7 +184,9 @@ export const api = {
   projects: {
     list: (): Promise<ProjectSummary[]> =>
       PREVIEW_MODE
-        ? Promise.resolve(previewProjects.filter((project) => project.status !== 'archived'))
+        ? Promise.all(previewProjects.filter((project) => project.status !== 'archived').map(async (project) => ({
+            ...project, layer_count: (await managementPreview.layers(project.id)).length, feature_count: 0,
+          })))
         : authorizedRequest<ProjectSummary[]>('/projects'),
 
     create: (payload: ProjectCreateInput): Promise<ProjectSummary> => {

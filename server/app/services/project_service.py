@@ -24,7 +24,7 @@ def _summary(project: Project, layer_count: int, feature_count: int) -> ProjectS
 async def list_projects(db: AsyncSession) -> list[ProjectSummary]:
     layer_count = (
         select(func.count(Layer.id))
-        .where(Layer.project_id == Project.id)
+        .where(Layer.project_id == Project.id, Layer.status != "archived")
         .correlate(Project)
         .scalar_subquery()
     )
@@ -60,7 +60,7 @@ async def get_project(db: AsyncSession, project_id: uuid.UUID) -> ProjectSummary
         return None
 
     layer_count = await db.scalar(
-        select(func.count(Layer.id)).where(Layer.project_id == project.id)
+        select(func.count(Layer.id)).where(Layer.project_id == project.id, Layer.status != "archived")
     ) or 0
     feature_count = await db.scalar(
         select(func.count(Feature.id)).where(
