@@ -13,6 +13,7 @@ const emptyCollection = { type: 'FeatureCollection' as const, features: [] }
 export function MapCanvas() {
   const container = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<Map | null>(null)
+  const draggedVertex = useRef<number | null>(null)
   const workspace = useMapWorkspace()
   const stateRef = useRef(workspace)
   stateRef.current = workspace
@@ -62,11 +63,13 @@ export function MapCanvas() {
     map.on('load', () => {
       map.addSource('workspace-features', { type: 'geojson', data: emptyCollection })
       map.addSource('drawing-preview', { type: 'geojson', data: emptyCollection })
+      map.addSource('current-location', { type: 'geojson', data: emptyCollection })
       map.addLayer({ id: 'feature-fill', type: 'fill', source: 'workspace-features', filter: ['==', '$type', 'Polygon'], paint: { 'fill-color': ['coalesce', ['get', '__color'], '#0b8a7d'], 'fill-opacity': .28, 'fill-outline-color': '#075f57' } })
       map.addLayer({ id: 'feature-line', type: 'line', source: 'workspace-features', filter: ['==', '$type', 'LineString'], paint: { 'line-color': ['coalesce', ['get', '__color'], '#0b8a7d'], 'line-width': 4 } })
       map.addLayer({ id: 'feature-point', type: 'circle', source: 'workspace-features', filter: ['==', '$type', 'Point'], paint: { 'circle-radius': 7, 'circle-color': ['coalesce', ['get', '__color'], '#0b8a7d'], 'circle-stroke-width': 2, 'circle-stroke-color': '#fff' } })
       map.addLayer({ id: 'drawing-line', type: 'line', source: 'drawing-preview', paint: { 'line-color': '#f59e0b', 'line-width': 3, 'line-dasharray': [2, 1] } })
       map.addLayer({ id: 'drawing-points', type: 'circle', source: 'drawing-preview', paint: { 'circle-radius': 5, 'circle-color': '#f59e0b', 'circle-stroke-color': '#fff', 'circle-stroke-width': 2 } })
+      map.addLayer({ id: 'current-location', type: 'circle', source: 'current-location', paint: { 'circle-radius': 8, 'circle-color': '#1687ff', 'circle-stroke-color': '#fff', 'circle-stroke-width': 3 } })
       setMapReady(true)
     })
     map.on('click', (event: MapMouseEvent) => {
@@ -79,6 +82,22 @@ export function MapCanvas() {
       }
       const hit = map.queryRenderedFeatures(event.point, { layers: ['feature-point', 'feature-line', 'feature-fill'] })[0]
       current.setSelectedFeature(featuresRef.current.find((feature) => feature.id === hit?.properties?.__id) ?? null)
+    })
+    map.on('mousedown', 'drawing-points', (event) => {
+      const index = event.features?.[0]?.properties?.index
+      if (typeof index !== 'number') return
+      draggedVertex.current = index; map.dragPan.disable(); event.preventDefault()
+    })
+    map.on('mousemove', (event) => {
+      if (draggedVertex.current === null) return
+      const next = [...stateRef.current.vertices]
+      next[draggedVertex.current] = [event.lngLat.lng, event.lngLat.lat]
+      stateRef.current.setVertices(next)
+    })
+    map.on('mouseup', () => { if (draggedVertex.current !== null) { draggedVertex.current = null; map.dragPan.enable() } })
+    map.on('dblclick', 'drawing-points', (event) => {
+      const index = event.features?.[0]?.properties?.index
+      if (typeof index === 'number' && stateRef.current.vertices.length > 1) stateRef.current.setVertices(stateRef.current.vertices.filter((_, item) => item !== index))
     })
     mapRef.current = map
     return () => { map.remove(); mapRef.current = null }
@@ -103,6 +122,21 @@ export function MapCanvas() {
     map.getCanvas().style.cursor = workspace.drawing ? 'crosshair' : ''
   }, [workspace.vertices, workspace.drawing, mapReady])
 
+  useEffect(() => {
+    if (!workspace.locationSignal) return
+    if (!navigator.geolocation) { setError('خدمة الموقع غير متاحة على هذا الجهاز'); return }
+    navigator.geolocation.getCurrentPosition((position) => {
+      const point: Position = [position.coords.longitude, position.coords.latitude]
+      workspace.setLocationAccuracy(position.coords.accuracy)
+      const map = mapRef.current
+      if (map && mapReady) {
+        ;(map.getSource('current-location') as GeoJSONSource).setData({ type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: point } })
+        map.flyTo({ center: point, zoom: Math.max(map.getZoom(), 16) })
+      }
+      if (workspace.drawing && workspace.activeLayer?.geometry_type === 'Point') { workspace.setVertices([point]); finish([point]) }
+    }, () => setError('تعذر قراءة الموقع. تحقق من إذن GPS.'), { enableHighAccuracy: true, timeout: 12_000 })
+  }, [workspace.locationSignal, mapReady, finish])
+
   return <div className="map-canvas-wrap">
     <MapToolbar />
     <SyncIndicator />
@@ -111,4 +145,5 @@ export function MapCanvas() {
     <div className="map-status-badge"><span className="map-status-dot" />{features.isFetching ? 'جارِ تحميل المعالم…' : `${features.data?.length ?? 0} معلم · ${navigator.onLine ? 'OpenStreetMap' : 'نسخة محلية'}`}</div>
   </div>
 }
+
 

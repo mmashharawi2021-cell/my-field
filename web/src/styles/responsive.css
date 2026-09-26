@@ -45,6 +45,10 @@
 }
 
 @media (max-width: 1100px), (hover: none) and (pointer: coarse) and (max-width: 1400px) {
+  .map-toolbar { max-width:calc(100% - 1rem); flex-wrap:wrap; gap:.4rem; }
+  .map-toolbar button { min-height:44px; min-width:44px; }
+  .draw-help,.gps-accuracy { flex-basis:100%; text-align:center; }
+  .attachment-grid { grid-template-columns:repeat(3,minmax(72px,1fr)); }
   body {
     padding-bottom: 92px;
   }
@@ -426,3 +430,4 @@
     padding-inline: 12px;
   }
 }
+
