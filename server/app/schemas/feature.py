@@ -43,6 +43,7 @@ class GeoJsonGeometry(BaseModel):
 
 class FeatureCreate(BaseModel):
     model_config = ConfigDict(extra='forbid')
+    id: uuid.UUID | None = None
     geometry: GeoJsonGeometry
     properties: dict[str, JsonValue] = Field(default_factory=dict, max_length=500)
 
@@ -89,3 +90,4 @@ class ChangeSummary(BaseModel):
     payload: dict[str, JsonValue]
     changed_by: uuid.UUID | None
     changed_at: datetime
+

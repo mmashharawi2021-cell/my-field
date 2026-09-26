@@ -15,6 +15,7 @@ export type MapFeature = {
   updated_by: string | null
   created_at: string
   updated_at: string
+  sync_status?: 'pending' | 'synced' | 'conflict'
 }
 
 export type FeatureVersion = Pick<MapFeature, 'version' | 'geometry' | 'properties'> & {
@@ -30,3 +31,4 @@ export type FeatureChange = {
   changed_by: string | null
   changed_at: string
 }
+

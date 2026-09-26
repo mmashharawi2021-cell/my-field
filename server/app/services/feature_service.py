@@ -94,10 +94,17 @@ def _record_change(db: AsyncSession, feature: Feature, operation: str, actor: Us
 async def create_feature(db: AsyncSession, layer_id: uuid.UUID, payload: FeatureCreate, actor: User) -> FeatureSummary:
     layer = await _active_layer(db, layer_id)
     _require_editable(layer)
+    if payload.id is not None:
+        existing = await db.get(Feature, payload.id)
+        if existing is not None:
+            if existing.layer_id == layer.id and existing.created_by == actor.id and existing.deleted_at is None:
+                return await get_feature(db, existing.id)
+            raise HTTPException(409, 'Feature id is already in use')
     geometry = payload.geometry.model_dump()
     await _validate_geometry(db, layer, geometry)
     expression = _geometry_expression(geometry)
     feature = Feature(
+        id=payload.id or uuid.uuid4(),
         project_id=layer.project_id, layer_id=layer.id, geometry=expression,
         properties=payload.properties, version=1, created_by=actor.id, updated_by=actor.id,
     )
@@ -170,3 +177,4 @@ async def list_changes(db: AsyncSession, feature_id: uuid.UUID) -> list[ChangeLo
     return (await db.scalars(select(ChangeLog).where(
         ChangeLog.entity_type == 'feature', ChangeLog.entity_id == feature_id
     ).order_by(ChangeLog.version.desc()))).all()
+

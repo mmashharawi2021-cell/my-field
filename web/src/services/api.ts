@@ -2,6 +2,7 @@ import type { TokenPair, UserProfile } from '../types/auth'
 import type { ProjectCreateInput, ProjectSummary, ProjectUpdateInput } from '../types/project'
 import { session } from './session'
 import { managementPreview } from './managementPreview'
+import { offlineDatabase } from './offlineDatabase'
 
 export const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '/api'
 export const PREVIEW_MODE = import.meta.env.VITE_PREVIEW_MODE === 'true'
@@ -155,7 +156,7 @@ export const api = {
       ? Promise.resolve({
           status: 'preview',
           service: 'GitHub Pages Preview',
-          version: 'Phase 04',
+          version: 'Phase 06',
           database: 'local-server-offline',
         })
       : rawRequest<HealthResponse>('/health'),
@@ -183,12 +184,15 @@ export const api = {
   },
 
   projects: {
-    list: (): Promise<ProjectSummary[]> =>
-      PREVIEW_MODE
-        ? Promise.all(previewProjects.filter((project) => project.status !== 'archived').map(async (project) => ({
+    list: async (): Promise<ProjectSummary[]> => {
+      if (PREVIEW_MODE) return Promise.all(previewProjects.filter((project) => project.status !== 'archived').map(async (project) => ({
             ...project, layer_count: (await managementPreview.layers(project.id)).length, feature_count: 0,
           })))
-        : authorizedRequest<ProjectSummary[]>('/projects'),
+      const key = `${session.getUser()?.id ?? 'anonymous'}:projects`
+      if (!navigator.onLine) return (await offlineDatabase.getCatalog<ProjectSummary[]>(key)) ?? []
+      try { const projects = await authorizedRequest<ProjectSummary[]>('/projects'); await offlineDatabase.putCatalog(key, projects); return projects }
+      catch (error) { if (error instanceof TypeError) return (await offlineDatabase.getCatalog<ProjectSummary[]>(key)) ?? []; throw error }
+    },
 
     create: (payload: ProjectCreateInput): Promise<ProjectSummary> => {
       if (PREVIEW_MODE) {
@@ -245,3 +249,4 @@ export const api = {
     },
   },
 }
+

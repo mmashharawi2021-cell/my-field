@@ -1,4 +1,5 @@
 from fastapi.testclient import TestClient
+from uuid import uuid4
 
 from app.main import app
 
@@ -121,12 +122,14 @@ def test_auth_and_project_crud() -> None:
         # Phase 05 feature CRUD, optimistic concurrency and history.
         point_layer = next(item for item in client.get(path, headers=headers).json() if item['geometry_type'] == 'Point')
         feature_path = '/api/layers/' + point_layer['id'] + '/features'
-        payload = {'geometry': {'type': 'Point', 'coordinates': [34.466, 31.51]}, 'properties': {'name': 'Valve 1', 'status': 'new'}}
+        payload = {'id': str(uuid4()), 'geometry': {'type': 'Point', 'coordinates': [34.466, 31.51]}, 'properties': {'name': 'Valve 1', 'status': 'new'}}
         assert client.post(feature_path, headers=viewer_headers, json=payload).status_code == 403
         created_feature = client.post(feature_path, headers=manager_headers, json=payload)
         assert created_feature.status_code == 201, created_feature.text
         feature = created_feature.json()
         assert feature['version'] == 1 and feature['geometry'] == payload['geometry']
+        repeated_feature = client.post(feature_path, headers=manager_headers, json=payload)
+        assert repeated_feature.status_code == 201 and repeated_feature.json()['id'] == feature['id']
         assert client.get(feature_path, headers=viewer_headers).json()[0]['id'] == feature['id']
         direct_path = '/api/features/' + feature['id']
         updated_feature = client.patch(direct_path, headers=manager_headers, json={'version': 1, 'properties': {'name': 'Valve 1 reviewed'}})
@@ -184,4 +187,5 @@ def test_auth_and_project_crud() -> None:
         assert client.delete('/api/projects/' + project['id'], headers=headers).status_code == 204
         assert client.get(path, headers=headers).status_code == 404
         assert client.patch('/api/layers/' + remaining, headers=headers, json={'name': 'Archived parent'}).status_code == 404
+
 

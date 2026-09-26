@@ -789,3 +789,16 @@
 .maplibregl-ctrl-attrib {
   font-size: 8px !important;
 }
+.sync-indicator { position:absolute; z-index:3; top:5rem; right:1rem; display:flex; align-items:center; gap:.45rem; padding:.5rem .7rem; border-radius:999px; background:rgba(255,255,255,.94); box-shadow:0 6px 20px rgba(4,45,40,.14); font-size:.78rem; }
+.sync-indicator button { border:0; background:transparent; color:var(--color-primary, #087f73); font:inherit; font-weight:700; cursor:pointer; }
+.sync-indicator .sync-summary { display:flex; align-items:center; gap:.45rem; color:inherit; }
+.sync-status-dot { width:.55rem; height:.55rem; border-radius:50%; background:#1fa37f; }
+.sync-indicator.offline .sync-status-dot,.sync-indicator.pending .sync-status-dot { background:#e9a23b; }
+.sync-indicator.conflict .sync-status-dot { background:#d94a4a; }
+.sync-queue-panel { position:absolute; top:calc(100% + .5rem); right:0; width:min(22rem, calc(100vw - 2rem)); max-height:22rem; overflow:auto; padding:.85rem; border-radius:1rem; background:#fff; box-shadow:0 14px 38px rgba(4,45,40,.2); color:#163b37; }
+.sync-queue-panel h4 { margin:0 0 .6rem; }
+.sync-queue-panel article { display:grid; gap:.3rem; padding:.65rem 0; border-top:1px solid #e4efed; }
+.sync-queue-panel article div { display:flex; justify-content:space-between; gap:.7rem; }
+.sync-queue-panel small { color:#66817e; }
+.sync-queue-panel .sync-error { color:#b43c3c; }
+
