@@ -7,19 +7,21 @@ import { canEditFeatures } from '../../../config/permissions'
 import { featuresApi } from '../../../services/features'
 import { useAuthStore } from '../../../stores/authStore'
 import { useMapWorkspace } from '../MapWorkspaceContext'
+import { useSyncStore } from '../../../stores/syncStore'
 
 export function FeatureDetailsPanel() {
   const workspace = useMapWorkspace()
   const feature = workspace.selectedFeature
   const canEdit = canEditFeatures(useAuthStore((state) => state.user?.role))
+  const online = useSyncStore((state) => state.online)
   const cache = useQueryClient()
   const [properties, setProperties] = useState('{}')
   const [editing, setEditing] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [error, setError] = useState<string | null>(null)
   useEffect(() => { setProperties(JSON.stringify(feature?.properties ?? {}, null, 2)); setEditing(false); setError(null) }, [feature])
-  const versions = useQuery({ queryKey: ['feature-versions', feature?.id], queryFn: () => featuresApi.versions(feature!.id), enabled: !!feature })
-  const changes = useQuery({ queryKey: ['feature-changes', feature?.id], queryFn: () => featuresApi.changes(feature!.id), enabled: !!feature })
+  const versions = useQuery({ queryKey: ['feature-versions', feature?.id], queryFn: () => featuresApi.versions(feature!.id), enabled: !!feature && online && feature?.sync_status !== 'pending' })
+  const changes = useQuery({ queryKey: ['feature-changes', feature?.id], queryFn: () => featuresApi.changes(feature!.id), enabled: !!feature && online && feature?.sync_status !== 'pending' })
   const update = useMutation({
     mutationFn: async () => {
       if (!feature) throw new Error('لم يتم تحديد معلم')
@@ -54,6 +56,7 @@ export function FeatureDetailsPanel() {
       <div><span>UUID</span><b title={feature.id}>{feature.id.slice(0, 8)}…</b></div>
       <div><span>Version</span><b>{feature.version}</b></div>
       <div><span>Geometry</span><b>{feature.geometry.type}</b></div>
+      <div><span>Sync</span><b>{feature.sync_status === 'pending' ? 'معلّق' : 'متزامن'}</b></div>
     </div>
     {error && <Notice>{error}</Notice>}
     <label className="properties-editor">الخصائص (JSON)
@@ -68,9 +71,11 @@ export function FeatureDetailsPanel() {
       <ActionButton onClick={() => setConfirmDelete(true)}>حذف</ActionButton>
     </div>}
     <section className="history-section"><h4>سجل التغييرات</h4>
+      {(!online || feature.sync_status === 'pending') && <small>سيُحدّث السجل بعد المزامنة.</small>}
       {changes.isPending ? <small>جارِ التحميل…</small> : changes.data?.map((change) => <div key={change.id}><b>{change.operation}</b><span>v{change.version} · {new Date(change.changed_at).toLocaleString('ar')}</span></div>)}
       {versions.error && <small>تعذر تحميل النسخ</small>}
     </section>
     <ConfirmDialog open={confirmDelete} title="حذف المعلم" message="سيتم إخفاء المعلم مع الاحتفاظ بنسخه وسجل التغييرات." confirmLabel="حذف" confirming={remove.isPending} onCancel={() => setConfirmDelete(false)} onConfirm={async () => { try { await remove.mutateAsync() } catch { /* shown above */ } }} />
   </aside>
 }
+

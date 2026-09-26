@@ -6,6 +6,7 @@ import { Notice } from '../../../components/ui/Notice'
 import { featuresApi } from '../../../services/features'
 import { useMapWorkspace } from '../MapWorkspaceContext'
 import type { GeoJsonGeometry, MapFeature, Position } from '../../../types/feature'
+import { SyncIndicator } from '../../sync/SyncIndicator'
 
 const emptyCollection = { type: 'FeatureCollection' as const, features: [] }
 
@@ -104,8 +105,10 @@ export function MapCanvas() {
 
   return <div className="map-canvas-wrap">
     <MapToolbar />
+    <SyncIndicator />
     {(error || features.error) && <div className="map-notice"><Notice>{error ?? features.error?.message}</Notice></div>}
     <div ref={container} className="map-canvas" aria-label="خريطة My Field" />
-    <div className="map-status-badge"><span className="map-status-dot" />{features.isFetching ? 'جارِ تحميل المعالم…' : `${features.data?.length ?? 0} معلم · OpenStreetMap`}</div>
+    <div className="map-status-badge"><span className="map-status-dot" />{features.isFetching ? 'جارِ تحميل المعالم…' : `${features.data?.length ?? 0} معلم · ${navigator.onLine ? 'OpenStreetMap' : 'نسخة محلية'}`}</div>
   </div>
 }
+

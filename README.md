@@ -120,8 +120,20 @@ The main branch automatically builds the web frontend and deploys it to GitHub P
 
 The GitHub Pages preview contains demo data only. PostgreSQL/PostGIS, authentication, and real project data remain on the local My Field server.
 
+### Phase 06 — Offline workspace and synchronization
+
+- Per-user IndexedDB cache for projects, layers and spatial features
+- Immediate offline create, edit and delete with a durable ordered queue
+- Automatic retry when connectivity returns and a manual Sync now action
+- Idempotent client UUIDs for safe create retries
+- Optimistic version conflicts retained for review instead of overwritten
+- Live connection, pending, failed and conflict indicators
+
+See [PHASE_06.md](PHASE_06.md) for the offline lifecycle and retry guarantees.
+
 See:
 
 - PHASE_01.md
 - PHASE_02.md
 - docs/FRONTEND_ARCHITECTURE.md
+
