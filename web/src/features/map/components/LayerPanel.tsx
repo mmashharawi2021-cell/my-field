@@ -68,8 +68,9 @@ function ProjectLayers({ projectId }: { projectId: string }) {
       {canManage && <div className="dialog-actions"><ActionButton onClick={() => setEditing(layer)}>تعديل</ActionButton><ActionButton onClick={() => setArchiving(layer)}>أرشفة</ActionButton></div>}
     </article>)}</div>
     {canManage && <ActionButton variant="primary" fullWidth onClick={() => setEditing(null)}>إضافة طبقة</ActionButton>}
-    <p className="layer-note">إدارة تعريفات الطبقات متاحة الآن؛ رسم المعالم وتحريرها في المرحلة التالية.</p>
+    <p className="layer-note">اختر طبقة نشطة، ثم ارسم المعالم أو حدّدها لتعديل خصائصها وهندستها.</p>
     {editing !== undefined && <LayerForm key={editing?.id ?? 'new'} layer={editing} busy={save.isPending} onClose={() => setEditing(undefined)} onSave={save.mutateAsync} />}
     <ConfirmDialog open={!!archiving} title="أرشفة الطبقة" message={'إخفاء الطبقة «' + (archiving?.name ?? '') + '» مع الاحتفاظ ببياناتها؟'} confirmLabel="أرشفة" confirming={archive.isPending} onCancel={() => { if (!archive.isPending) setArchiving(null) }} onConfirm={async () => { if (archiving) { try { await archive.mutateAsync(archiving.id) } catch { /* Error displayed above. */ } } }} />
   </>
 }
+
