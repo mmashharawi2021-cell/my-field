@@ -131,9 +131,20 @@ The GitHub Pages preview contains demo data only. PostgreSQL/PostGIS, authentica
 
 See [PHASE_06.md](PHASE_06.md) for the offline lifecycle and retry guarantees.
 
+### Phase 07 — Advanced field tools
+
+- Vertex drag, add/remove, undo and redo for geometry editing
+- High-accuracy GPS location with accuracy display and point capture
+- Layer-defined attribute forms for text, number, date and select fields
+- Offline image attachments synchronized with feature properties and history
+- Installable PWA shell with manifest, icon and service-worker caching
+
+See [PHASE_07.md](PHASE_07.md) for field workflows and limits.
+
 See:
 
 - PHASE_01.md
 - PHASE_02.md
 - docs/FRONTEND_ARCHITECTURE.md
+
 
